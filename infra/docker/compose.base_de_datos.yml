@@ -1,0 +1,71 @@
+name: smartfin
+
+services:
+  postgres_operacional:
+    image: postgres:16-alpine
+    container_name: smartfin-postgres-oper
+    environment:
+      POSTGRES_DB: ${SF_OPER_DB:-smartfin_oper}
+      POSTGRES_USER: ${SF_OPER_USER:-smartfin}
+      POSTGRES_PASSWORD: ${SF_OPER_PASSWORD:-smartfin123}
+      TZ: ${SF_TZ:-America/Guayaquil}
+    ports:
+      - "${SF_OPER_PORT:-5432}:5432"
+    volumes:
+      - sf_postgres_operacional_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SF_OPER_USER:-smartfin} -d ${SF_OPER_DB:-smartfin_oper}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - smartfin_red
+
+  postgres_inteligencia:
+    image: postgres:16-alpine
+    container_name: smartfin-postgres-bi
+    environment:
+      POSTGRES_DB: ${SF_BI_DB:-smartfin_bi}
+      POSTGRES_USER: ${SF_BI_USER:-smartfin}
+      POSTGRES_PASSWORD: ${SF_BI_PASSWORD:-smartfin123}
+      TZ: ${SF_TZ:-America/Guayaquil}
+    ports:
+      - "${SF_BI_PORT:-5433}:5432"
+    volumes:
+      - sf_postgres_inteligencia_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SF_BI_USER:-smartfin} -d ${SF_BI_DB:-smartfin_bi}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - smartfin_red
+
+  administrador_postgresql:
+    image: dpage/pgadmin4:8
+    container_name: smartfin-pgadmin
+    depends_on:
+      postgres_operacional:
+        condition: service_healthy
+      postgres_inteligencia:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${SF_PGADMIN_EMAIL:-admin@smartfin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${SF_PGADMIN_PASSWORD:-admin123}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      TZ: ${SF_TZ:-America/Guayaquil}
+    ports:
+      - "${SF_PGADMIN_PORT:-5050}:80"
+    volumes:
+      - sf_pgadmin_data:/var/lib/pgadmin
+    networks:
+      - smartfin_red
+
+networks:
+  smartfin_red:
+    driver: bridge
+
+volumes:
+  sf_postgres_operacional_data:
+  sf_postgres_inteligencia_data:
+  sf_pgadmin_data:

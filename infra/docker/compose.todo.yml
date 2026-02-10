@@ -1,0 +1,5 @@
+name: smartfin
+
+include:
+  - compose.base_de_datos.yml
+  - compose.capas.yml

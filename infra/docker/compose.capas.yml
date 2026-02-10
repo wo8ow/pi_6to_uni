@@ -1,0 +1,50 @@
+name: smartfin
+
+services:
+  api_backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: smartfin-api-backend
+    environment:
+      TZ: ${SF_TZ:-America/Guayaquil}
+      SPRING_PROFILES_ACTIVE: ${SF_SPRING_PROFILE:-local}
+      BASE_DATOS_URL: ${SF_OPER_JDBC_URL:-jdbc:postgresql://postgres_operacional:5432/smartfin_oper}
+      BASE_DATOS_USUARIO: ${SF_OPER_USER:-smartfin}
+      BASE_DATOS_CLAVE: ${SF_OPER_PASSWORD:-smartfin123}
+    ports:
+      - "${SF_API_PORT:-8080}:8080"
+    networks:
+      - smartfin_red
+
+  servicio_inteligencia_artificial:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    container_name: smartfin-servicio-ia
+    environment:
+      TZ: ${SF_TZ:-America/Guayaquil}
+      BASE_DATOS_URL: ${SF_OPER_PG_URL:-postgresql://smartfin:${SF_OPER_PASSWORD:-smartfin123}@postgres_operacional:5432/smartfin_oper}
+    ports:
+      - "${SF_IA_PORT:-8000}:8000"
+    networks:
+      - smartfin_red
+
+  aplicacion_frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: smartfin-frontend
+    environment:
+      TZ: ${SF_TZ:-America/Guayaquil}
+      API_URL: ${SF_API_URL_PUBLICA:-http://localhost:8080}
+    ports:
+      - "${SF_FRONTEND_PORT:-4200}:80"
+    networks:
+      - smartfin_red
+    depends_on:
+      - api_backend
+
+networks:
+  smartfin_red:
+    external: false
