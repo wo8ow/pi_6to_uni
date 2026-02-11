@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 // Importamos PrimeNG
-//import { TableModule } from 'primeng/table';
-//import { ButtonModule } from 'primeng/button';
-//import { ToolbarModule } from 'primeng/toolbar';
-//import { CardModule } from 'primeng/card';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { ToolbarModule } from 'primeng/toolbar';
+import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-gestion-periodos',
