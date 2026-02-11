@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/smartfin_operacional
+    username: smartfin
+    password: smartfin123
+
+smartfin:
+  jwt:
+    secreto: "SMARTFIN_LOCAL_SECRETO_MUY_LARGO_MINIMO_32_CARACTERES_1234567890"
+    minutos_expiracion: 240
+    emisor: "smartfin-api"
