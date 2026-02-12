@@ -3,28 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
 
-// Importaciones de UI (PrimeNG)
-// import { CardModule } from 'primeng/card';
-// import { InputTextModule } from 'primeng/inputtext';
-// import { PasswordModule } from 'primeng/password';
-// import { ButtonModule } from 'primeng/button';
-// import { CheckboxModule } from 'primeng/checkbox';
-// import { RippleModule } from 'primeng/ripple';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [
-    CommonModule, 
-    FormsModule 
-    // CardModule, 
-    // InputTextModule, 
-    // PasswordModule, 
-    // ButtonModule,
-    // CheckboxModule,
-    // RippleModule
-  ],
+  imports: [CommonModule, FormsModule, InputTextModule, PasswordModule, ButtonModule, CheckboxModule],
   template: `
     <div class="flex align-items-center justify-content-center min-h-screen bg-blue-50">
       
@@ -73,15 +61,15 @@ import { AuthService } from '../../core/services/auth.service';
             <a class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">¿Olvidaste tu clave?</a>
           </div>
 
-          <button 
+          <p-button 
             pButton 
             pRipple 
             label="Iniciar Sesión" 
             icon="pi pi-user" 
-            class="w-full"
+            styleClass="w-full"
             [loading]="cargando"
             type="submit">
-          </button>
+          </p-button>
 
         </form>
       </div>
@@ -107,7 +95,7 @@ export class LoginComponent {
     
     this.authService.login({ correo: this.email, clave: this.password }).subscribe({
       next: () => {
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/app/dashboard']);
         this.cargando = false;
       },
       error: (err) => {

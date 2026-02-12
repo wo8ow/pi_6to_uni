@@ -6,18 +6,20 @@ import { DashboardComponent } from './features/dashboard/dashboard.component';
 //import { CatalogoCuentasComponent } from './features/plan-cuentas/catalogo-cuentas/catalogo-cuentas';
 import { GestionPeriodosComponent } from './features/periodos/gestion-periodos/gestion-periodos';
 import { authGuard } from './core/guards/auth.guard';
+import { InicioComponent } from './features/inicio/inicio.component';
 
 export const routes: Routes = [
+  { path: '', component: InicioComponent },
   { path: 'login', component: LoginComponent },
-  { path: '', runGuardsAndResolvers: 'always', canActivate: [authGuard], children: 
+  { path: 'app', runGuardsAndResolvers: 'always', canActivate: [authGuard], children: 
     [
     { path: 'dashboard', component: DashboardComponent},
-    //{ path: 'empresas', component: ListaEmpresasComponent}, 
-    //{ path: 'empresas/form', component: FormEmpresaComponent},
-    //{ path: 'catalogo-cuentas', component: CatalogoCuentasComponent}
-    { path: 'periodos', component: GestionPeriodosComponent}
+    { path: 'periodos', component: GestionPeriodosComponent},
+    { path: '', pathMatch: 'full', redirectTo: 'dashboard' }
     
     ] 
 },
-  { path: '**', redirectTo: 'login' }
+  { path: 'dashboard', redirectTo: 'app/dashboard', pathMatch: 'full' },
+  { path: 'periodos', redirectTo: 'app/periodos', pathMatch: 'full' },
+  { path: '**', redirectTo: '' }
 ];
