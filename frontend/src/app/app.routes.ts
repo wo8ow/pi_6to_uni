@@ -1,9 +1,6 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './features/login/login.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
-//import { ListaEmpresasComponent } from './features/empresas/lista-empresas/lista-empresas';
-//import { FormEmpresaComponent } from './features/empresas/form-empresa/form-empresa';
-//import { CatalogoCuentasComponent } from './features/plan-cuentas/catalogo-cuentas/catalogo-cuentas';
 import { GestionPeriodosComponent } from './features/periodos/gestion-periodos/gestion-periodos';
 import { authGuard } from './core/guards/auth.guard';
 import { InicioComponent } from './features/inicio/inicio.component';
