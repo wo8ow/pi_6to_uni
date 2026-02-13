@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -38,19 +39,23 @@ public class InicializadorAdministrador implements CommandLineRunner {
 
         String correoAdmin = System.getenv().getOrDefault("SMARTFIN_ADMIN_CORREO", "admin@smartfin.com");
         String nombreAdmin = System.getenv().getOrDefault("SMARTFIN_ADMIN_NOMBRE", "Administrador SmartFin");
-        String claveAdmin = System.getenv().getOrDefault("SMARTFIN_ADMIN_CLAVE", "Admin123*");
+               Optional<String> claveAdminEnv = Optional.ofNullable(System.getenv("SMARTFIN_ADMIN_CLAVE"))
+                .filter(clave -> !clave.isBlank());
+        String claveAdmin = claveAdminEnv.orElse("Admin123$");
 
         RolEntidadJpa rolAdmin = rolRepositorioJpa.findByNombre("ADMINISTRADOR")
                 .orElseThrow(() -> new IllegalStateException("No existe el rol ADMINISTRADOR. Ejecuta semillas de base de datos."));
 
         UsuarioEntidadJpa usuario = usuarioRepositorioJpa.findByCorreo(correoAdmin).orElse(null);
 
+        boolean usuarioCreado = false;
         if (usuario == null) {
             usuario = new UsuarioEntidadJpa();
             usuario.setUsuarioId(UUID.randomUUID());
             usuario.setCorreo(correoAdmin);
             usuario.setNombreCompleto(nombreAdmin);
             usuario.setActivo(true);
+            usuarioCreado = true;
 
             OffsetDateTime ahora = OffsetDateTime.now();
             usuario.setCreadoEn(ahora);
@@ -59,15 +64,17 @@ public class InicializadorAdministrador implements CommandLineRunner {
             usuarioRepositorioJpa.save(usuario);
         }
 
-        Query q = entityManager.createNativeQuery("""
-            update smartfin.usuario
-            set clave_hash = crypt(?1, gen_salt('bf')),
-                actualizado_en = now()
-            where correo = ?2
-        """);
-        q.setParameter(1, claveAdmin);
-        q.setParameter(2, correoAdmin);
-        q.executeUpdate();
+        if (usuarioCreado || claveAdminEnv.isPresent()) {
+            Query q = entityManager.createNativeQuery("""
+                update smartfin.usuario
+                set clave_hash = crypt(?1, gen_salt('bf')),
+                    actualizado_en = now()
+                where correo = ?2
+            """);
+            q.setParameter(1, claveAdmin);
+            q.setParameter(2, correoAdmin);
+            q.executeUpdate();
+        }
 
         UUID usuarioId = usuario.getUsuarioId();
         UUID rolId = rolAdmin.getRolId();
