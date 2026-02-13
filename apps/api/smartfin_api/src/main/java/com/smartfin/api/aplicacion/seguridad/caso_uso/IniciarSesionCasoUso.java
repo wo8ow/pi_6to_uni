@@ -1,5 +1,6 @@
 package com.smartfin.api.aplicacion.seguridad.caso_uso;
 
+import com.smartfin.api.dominio.seguridad.puerto.ServicioEncriptacion;
 import com.smartfin.api.dominio.seguridad.puerto.TokenServicio;
 import com.smartfin.api.dominio.usuario.modelo.Rol;
 import com.smartfin.api.dominio.usuario.modelo.Usuario;
@@ -19,23 +20,30 @@ public class IniciarSesionCasoUso {
     private final UsuarioRolRepositorio usuarioRolRepositorio;
     private final RolRepositorio rolRepositorio;
     private final TokenServicio tokenServicio;
+    private final ServicioEncriptacion servicioEncriptacion;
 
     public IniciarSesionCasoUso(
             UsuarioRepositorio usuarioRepositorio,
             UsuarioRolRepositorio usuarioRolRepositorio,
             RolRepositorio rolRepositorio,
-            TokenServicio tokenServicio
+            TokenServicio tokenServicio,
+            ServicioEncriptacion servicioEncriptacion
     ) {
         this.usuarioRepositorio = usuarioRepositorio;
         this.usuarioRolRepositorio = usuarioRolRepositorio;
         this.rolRepositorio = rolRepositorio;
         this.tokenServicio = tokenServicio;
+        this.servicioEncriptacion = servicioEncriptacion;
     }
 
     public Resultado ejecutar(String correo, String clave) {
 
-        Usuario usuario = usuarioRepositorio.buscarPorCorreoYClave(correo, clave)
+        Usuario usuario = usuarioRepositorio.buscarPorCorreo(correo)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario o clave incorrectos"));
+
+        if (!servicioEncriptacion.verificar(clave, usuario.getClaveHash())) {
+            throw new IllegalArgumentException("Usuario o clave incorrectos");
+        }
 
         if (!usuario.isActivo()) {
             throw new IllegalArgumentException("Usuario inactivo");
