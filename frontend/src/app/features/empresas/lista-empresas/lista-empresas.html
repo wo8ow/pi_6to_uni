@@ -1,1 +1,39 @@
-<p>lista-empresas works!</p>
+<div class="p-4">
+  <p-card header="Gestión de Empresas">
+    <p-toolbar styleClass="mb-4">
+      <ng-template pTemplate="left">
+        <p-button label="Nueva Empresa" icon="pi pi-plus" class="mr-2" (onClick)="nuevaEmpresa()"></p-button>
+      </ng-template>
+    </p-toolbar>
+
+    <p-table [value]="empresas()" [tableStyle]="{ 'min-width': '50rem' }">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Identificación</th>
+          <th>Nombre</th>
+          <th>Sector</th>
+          <th>Moneda</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-empresa>
+        <tr>
+          <td>{{ empresa.identificacion }}</td>
+          <td>{{ empresa.nombre }}</td>
+          <td>{{ empresa.sector }}</td>
+          <td>{{ empresa.monedaCodigo }}</td>
+          <td>
+            <span [class]="'px-2 py-1 border-round ' + (empresa.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')">
+              {{ empresa.activo ? 'ACTIVO' : 'INACTIVO' }}
+            </span>
+          </td>
+          <td>
+            <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="editarEmpresa(empresa.empresaId)"></p-button>
+            <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (onClick)="eliminarEmpresa(empresa.empresaId)"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>
